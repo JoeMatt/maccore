@@ -1305,7 +1305,7 @@ namespace MonoMac.Foundation
 		string [] ISOCurrencyCodes { get; }
 
 		[Export ("ISOCountryCodes")][Static]
-		string ISOCountryCodes { get; }
+		string [] ISOCountryCodes { get; }
 
 		[Export ("commonISOCurrencyCodes")][Static]
 		string [] CommonISOCurrencyCodes { get; }
