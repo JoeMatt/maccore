@@ -36,7 +36,7 @@ using MonoMac.CoreGraphics;
 #if MONOMAC
 using MonoMac.AppKit;
 #else
-using MonoMac.CoreLocation;
+//using MonoMac.CoreLocation;
 using MonoMac.UIKit;
 #endif
 

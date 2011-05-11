@@ -214,8 +214,20 @@ namespace MonoMac.CoreGraphics {
 		//[DllImport (Constants.CoreGraphicsLibrary)]
 		//extern static bool CGFontGetGlyphAdvances(IntPtr font, ushort [] glyphs, int size_t_count, int [] advances);
 
-		//[DllImport (Constants.CoreGraphicsLibrary)]
-		//extern static bool CGFontGetGlyphBBoxes(IntPtr font, ushort [] glyphs, int size_t_count, RectangleF [] bboxes);
+		[DllImport (Constants.CoreGraphicsLibrary)]
+		unsafe extern static bool CGFontGetGlyphBBoxes(IntPtr font, ushort [] glyphs, int size_t_count, ref RectangleF[] bboxes);
+		public RectangleF[] GetGlyphBBoxes(ushort [] glyphs, ref RectangleF[] bboxes)
+		{
+
+            int length = glyphs.Length;
+            Console.WriteLine("len: "+length+" char: "+glyphs[0]);
+		    bool rtn = CGFontGetGlyphBBoxes(handle, glyphs, length, ref bboxes);
+		    
+		    if(rtn == false)
+		        throw new Exception("Error in CGFontGetGlyphBBoxes");
+		        
+		   return bboxes;
+		}
 		
 		[DllImport (Constants.CoreGraphicsLibrary)]
 		extern static ushort CGFontGetGlyphWithGlyphName(IntPtr font, IntPtr CFStringRef_name);
