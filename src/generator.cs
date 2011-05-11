@@ -1330,7 +1330,7 @@ public class Generator {
 		"MonoMac.ObjCRuntime",
 		"MonoMac.CoreGraphics",
 		"MonoMac.CoreAnimation",
-		"MonoMac.CoreLocation", 
+//		"MonoMac.CoreLocation", 
 		"MonoMac.QTKit",
 		"MonoMac.CoreVideo",
 		"MonoMac.OpenGL",
@@ -1341,7 +1341,7 @@ public class Generator {
 		"MonoTouch.Foundation", 
 		"MonoTouch.ObjCRuntime", 
 		"MonoTouch.CoreAnimation", 
-		"MonoTouch.CoreLocation", 
+//		"MonoTouch.CoreLocation", 
 		"MonoTouch.MapKit", 
 		"MonoTouch.UIKit",
 		"MonoTouch.CoreGraphics"
