@@ -31,10 +31,13 @@ using System.Runtime.InteropServices;
 using MonoMac.ObjCRuntime;
 using MonoMac.Foundation;
 using MonoMac.CoreFoundation;
+using MonoMac.CoreGraphics;
 
 #if !(GENERATOR || MONOMAC)
 using MonoMac.CoreText;
 #endif
+
+using CGGlyph = System.UInt16;
 
 namespace MonoMac.CoreGraphics {
 
@@ -211,22 +214,41 @@ namespace MonoMac.CoreGraphics {
 
 		//[DllImport (Constants.CoreGraphicsLibrary)]
 		//extern static CFDictionaryRef CGFontCopyVariations(IntPtr font);
-		//[DllImport (Constants.CoreGraphicsLibrary)]
-		//extern static bool CGFontGetGlyphAdvances(IntPtr font, ushort [] glyphs, int size_t_count, int [] advances);
 
 		[DllImport (Constants.CoreGraphicsLibrary)]
-		unsafe extern static bool CGFontGetGlyphBBoxes(IntPtr font, ushort [] glyphs, int size_t_count, ref RectangleF[] bboxes);
-		public RectangleF[] GetGlyphBBoxes(ushort [] glyphs, ref RectangleF[] bboxes)
-		{
+		extern static bool CGFontGetGlyphAdvances(IntPtr font, [In] CGGlyph [] glyphs, int count, [Out] int [] advances);
+        public int[] GetGlyphAdvances (CGGlyph[] glyphs, int [] advances)
+        {
+            int count = glyphs.Length;
+            
+		    AssertCount  (count);
+		    AssertLength ("glyphs",         glyphs, count);
+			AssertLength ("advances",       advances, count, true);
+			
+			bool rtn = CGFontGetGlyphAdvances(handle, glyphs, count, advances);
 
-            int length = glyphs.Length;
-            Console.WriteLine("len: "+length+" char: "+glyphs[0]);
-		    bool rtn = CGFontGetGlyphBBoxes(handle, glyphs, length, ref bboxes);
+ 		    if(rtn == false)
+ 		        throw new Exception("Error in CGFontGetGlyphAdvances");
+
+ 		   return advances;
+        }
+        
+		[DllImport (Constants.CoreGraphicsLibrary)]
+		extern static bool CGFontGetGlyphBBoxes(IntPtr font, [In] CGGlyph[] glyphs, int count, [Out] RectangleF[] boundingRects);
+		public RectangleF[] GetGlyphBoundingBoxes (CGGlyph [] glyphs, RectangleF [] boundingBoxes)
+		{
+		    int count = glyphs.Length;
+            
+		    AssertCount  (count);
+		    AssertLength ("glyphs",         glyphs, count);
+			AssertLength ("boundingBoxes",  boundingBoxes, count, true);
+            
+		    bool rtn = CGFontGetGlyphBBoxes(handle, glyphs, count, boundingBoxes);
 		    
 		    if(rtn == false)
 		        throw new Exception("Error in CGFontGetGlyphBBoxes");
 		        
-		   return bboxes;
+		   return boundingBoxes;
 		}
 		
 		[DllImport (Constants.CoreGraphicsLibrary)]
@@ -286,5 +308,27 @@ namespace MonoMac.CoreGraphics {
 
 		[DllImport (Constants.CoreTextLibrary, EntryPoint="CGFontGetTypeID")]
 		public extern static int GetTypeID ();
+		
+		// Copy from CTFont - should be somewhere more global
+		static void AssertCount (int count)
+		{
+			if (count < 0)
+				throw new ArgumentOutOfRangeException ("count", "cannot be negative");
+		}
+
+		static void AssertLength<T>(string name, T[] array, int count)
+		{
+			AssertLength (name, array, count, false);
+		}
+
+		static void AssertLength<T>(string name, T[] array, int count, bool canBeNull)
+		{
+			if (canBeNull && array == null)
+				return;
+			if (array == null)
+				throw new ArgumentNullException (name);
+			if (array.Length < count)
+				throw new ArgumentException (string.Format ("{0}.Length cannot be < count", name), name);
+		}
 	}
 }
